@@ -52,14 +52,14 @@ for label_int, samples in classes.items():
     n = len(samples)
     n_train = int(n*0.6)
     n_val = int(n*0.2)
-    train_data = samples[:n_train]
-    val_data = samples[n_train:n_train+n_val]
-    test_data = samples[n_train+n_val :]
+    train_data.extend(samples[:n_train])
+    val_data.extend(samples[n_train:n_train+n_val])
+    test_data.extend(samples[n_train+n_val :])
 # check
 print(
     f"Train size: {len(train_data)} | Val size: {len(val_data)} | Test size: {len(test_data)}"
 )
-# normalizing training set
+# normalizing
 features_count = len(train_data[0][0])
 
 means = []
@@ -76,7 +76,33 @@ for feature_idx in range(features_count):
         squared_diffs.append(diff)
     
     variance = sum(squared_diffs)/len(column_values)
-    stand_d = math.sqrt(variance)
+    stand_d_val = math.sqrt(variance)
 
     means.append(mean)
-    stand_d.append(stand_d)
+    stand_d.append(stand_d_val)
+
+def standardize_dataset(dataset, means, stand_d):
+    standardized_features = []
+    labels = []
+    for features, label in dataset:
+        temp_std_feat = []
+        for i in range(len(features)):
+            temp_std_feat.append((features[i]-means[i])/stand_d[i])
+        standardized_features.append(temp_std_feat)
+        labels.append(label)
+    return standardized_features, labels
+
+# normilizing each set
+V_train, l_train = standardize_dataset(train_data, means, stand_d)
+V_val, l_val = standardize_dataset(val_data, means, stand_d) 
+V_test, l_test = standardize_dataset(test_data, means, stand_d) 
+
+# pytorch
+V_train_t = torch.tensor(V_train, dtype = torch.float32)
+l_train_t = torch.tensor(l_train, dtype = torch.long)
+
+V_val_t = torch.tensor(V_val, dtype = torch.float32)
+l_val_t = torch.tensor(l_val, dtype = torch.long)
+
+V_test_t = torch.tensor(V_test, dtype = torch.float32)
+l_test_t = torch.tensor(l_test, dtype = torch.long)
