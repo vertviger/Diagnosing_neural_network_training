@@ -2,6 +2,8 @@ import csv
 import math
 import random
 import torch
+import torch.optim as optim
+import torch.nn as nn
 
 random.seed(42)
 # reading data from the file
@@ -106,3 +108,20 @@ l_val_t = torch.tensor(l_val, dtype = torch.long)
 
 V_test_t = torch.tensor(V_test, dtype = torch.float32)
 l_test_t = torch.tensor(l_test, dtype = torch.long)
+
+# Multi Layer Perceptron
+class BaselineMLP(nn.Module):
+
+    def __init__(self, input_dim, hidden_dim, output_dim):
+        super(BaselineMLP, self).__init__()
+        self.fc1 = nn.Linear(input_dim, hidden_dim)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_dim, output_dim)
+
+    def forward(self, x):
+        out = self.fc1(x)
+        out = self.relu(out)
+        out = self.fc2(out)
+        return out
+
+model = BaselineMLP(input_dim=4, hidden_dim=8, output_dim=3)
