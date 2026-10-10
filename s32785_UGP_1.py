@@ -125,3 +125,48 @@ class BaselineMLP(nn.Module):
         return out
 
 model = BaselineMLP(input_dim=4, hidden_dim=8, output_dim=3)
+
+# Loss function
+criterion = nn.CrossEntropyLoss()
+# Gradient for parameter updates
+optimizer = optim.SGD(model.parameters(), lr = 0.05)
+
+# Training setup
+epochs = 150
+train_losses = []
+val_losses = []
+train_accuracies = []
+val_accuracies = []
+
+# Training
+for epoch in range(epochs):
+    model.train()
+    train_logits = model(V_train_t)
+    loss = criterion(train_logits, l_train_t)
+    # backpropagation
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    # accuracy
+    _, training_prediction = torch.max(train_logits, dim=1)
+    training_accuracy = (training_prediction == l_train_t).float().mean().item()
+    # evaluation
+    model.eval()
+    with torch.no_grad():
+        val_logits = model(V_val_t)
+        val_loss = criterion(val_logits, l_val_t)
+        _, val_predictions = torch.max(val_logits, dim = 1)
+        val_accuracy = (val_predictions == l_val_t).float().mean().item()
+    # saving history of metrics
+    train_losses.append(loss.item())
+    val_losses.append(val_loss.item())
+    train_accuracies.append(training_accuracy)
+    val_accuracies.append(val_accuracy)
+
+    # debug
+    if (epoch + 1) % 30 == 0:
+        print(
+            f"Epoch {epoch+1:03d}/{epochs} | "
+            f"Train Loss: {loss.item():.4f} | Val Loss: {val_loss.item():.4f} | "
+            f"Train Acc: {training_accuracy*100:.1f}% | Val Acc: {val_accuracy*100:.1f}%"
+        )
