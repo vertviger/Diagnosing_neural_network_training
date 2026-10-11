@@ -172,6 +172,17 @@ for epoch in range(epochs):
             f"Train Acc: {training_accuracy*100:.1f}% | Val Acc: {val_accuracy*100:.1f}%"
         )
 
+# testing
+
+model.eval()
+with torch.no_grad():
+    test_logits = model(V_test_t)
+    test_loss = criterion(test_logits, l_test_t)
+    _, test_predictions = torch.max(test_logits, dim = 1)
+    test_accuracy = (test_predictions == l_test_t).float().mean().item()
+
+print(f"Test Acc: {test_accuracy*100:.1f}%")
+
 # plotting the accuracy and loss metrics
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize = (12, 5))
