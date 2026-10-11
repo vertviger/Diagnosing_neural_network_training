@@ -4,6 +4,7 @@ import random
 import torch
 import torch.optim as optim
 import torch.nn as nn
+import matplotlib.pyplot as plt
 
 random.seed(42)
 # reading data from the file
@@ -170,3 +171,26 @@ for epoch in range(epochs):
             f"Train Loss: {loss.item():.4f} | Val Loss: {val_loss.item():.4f} | "
             f"Train Acc: {training_accuracy*100:.1f}% | Val Acc: {val_accuracy*100:.1f}%"
         )
+
+# plotting the accuracy and loss metrics
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize = (12, 5))
+
+ax1.plot(train_losses, label = "Train Loss", color = "blue")
+ax1.plot(val_losses, label = "Validation Loss", color = "green")
+ax1.set_title("Loss changes through epochs")
+ax1.set_xlabel("Epoch")
+ax1.set_ylabel("Loss")
+ax1.legend()
+ax1.grid(True)
+
+ax2.plot([acc * 100 for acc in train_accuracies], label = "Train Accuracy", color = "blue")
+ax2.plot([acc * 100 for acc in val_accuracies], label = "Validation Accuracy", color = "green")
+ax2.set_title("Accuracy changes through epochs")
+ax2.set_xlabel("Epochs")
+ax2.set_ylabel("Accuracy %")
+ax2.legend()
+ax2.grid(True)
+
+plt.tight_layout()
+plt.show()
