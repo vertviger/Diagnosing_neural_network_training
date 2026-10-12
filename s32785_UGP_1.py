@@ -4,6 +4,7 @@ import random
 import torch
 import torch.optim as optim
 import torch.nn as nn
+from torch.utils.data import TensorDataset, DataLoader
 import matplotlib.pyplot as plt
 
 random.seed(42)
@@ -110,27 +111,35 @@ l_val_t = torch.tensor(l_val, dtype = torch.long)
 V_test_t = torch.tensor(V_test, dtype = torch.float32)
 l_test_t = torch.tensor(l_test, dtype = torch.long)
 
+# batches setup
+
+train_dataset = TensorDataset(V_train_t, l_train_t)
+batch_size = 16
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+
 # Multi Layer Perceptron
 class BaselineMLP(nn.Module):
 
-    def __init__(self, input_dim, hidden_dim, output_dim):
+    def __init__(self, input_dim, hidden_dim, output_dim, dropout_P):
         super(BaselineMLP, self).__init__()
         self.fc1 = nn.Linear(input_dim, hidden_dim)
         self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(dropout_P)
         self.fc2 = nn.Linear(hidden_dim, output_dim)
 
     def forward(self, x):
         out = self.fc1(x)
         out = self.relu(out)
+        out = self.dropout(out)
         out = self.fc2(out)
         return out
 
-model = BaselineMLP(input_dim=4, hidden_dim=8, output_dim=3)
+model = BaselineMLP(input_dim=4, hidden_dim=8, output_dim=3, dropout_P=0.10)
 
 # Loss function
 criterion = nn.CrossEntropyLoss()
 # Gradient for parameter updates
-optimizer = optim.SGD(model.parameters(), lr = 0.05)
+optimizer = optim.Adam(model.parameters(), lr = 0.5, weight_decay=1e-3)
 
 # Training setup
 epochs = 150
@@ -142,15 +151,26 @@ val_accuracies = []
 # Training
 for epoch in range(epochs):
     model.train()
-    train_logits = model(V_train_t)
-    loss = criterion(train_logits, l_train_t)
-    # backpropagation
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-    # accuracy
-    _, training_prediction = torch.max(train_logits, dim=1)
-    training_accuracy = (training_prediction == l_train_t).float().mean().item()
+    batch_loss = 0.0
+    correct_batch_train = 0
+    total_train = 0
+
+    for batch_features, batch_labels in train_loader:
+        train_logits = model(batch_features)
+        loss = criterion(train_logits, batch_labels)
+        # backpropagation
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        # accuracy
+        batch_loss += loss.item() * batch_features.size(0)
+        _, training_prediction = torch.max(train_logits, dim=1)
+        correct_batch_train += (training_prediction == batch_labels).sum().item()
+        total_train += batch_labels.size(0)
+    # epoch training metrics
+    epoch_training_loss = batch_loss/total_train
+    training_accuracy = correct_batch_train/total_train
+
     # evaluation
     model.eval()
     with torch.no_grad():
@@ -185,7 +205,8 @@ print(f"Test Acc: {test_accuracy*100:.1f}%")
 
 # plotting the accuracy and loss metrics
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize = (12, 5))
+fig, axes = plt.subplots(2, 2, figsize = (10, 10))
+ax1, ax2, ax3, ax4 = axes.flatten()
 
 ax1.plot(train_losses, label = "Train Loss", color = "blue")
 ax1.plot(val_losses, label = "Validation Loss", color = "green")
