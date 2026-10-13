@@ -116,7 +116,7 @@ l_test_t = torch.tensor(l_test, dtype = torch.long)
 # batches setup
 
 train_dataset = TensorDataset(V_train_t, l_train_t)
-batch_size = 32
+batch_size = 30
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 # Multi Layer Perceptron
@@ -206,6 +206,8 @@ with torch.no_grad():
 print(f"Test Acc: {test_accuracy*100:.1f}%")
 
 # plotting the accuracy and loss metrics
+
+plt.style.use('dark_background')
 
 fig, axes = plt.subplots(2, 2, figsize = (12, 12))
 ax1, ax2, ax3, ax4 = axes.flatten()
