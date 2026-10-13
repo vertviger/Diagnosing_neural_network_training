@@ -28,7 +28,7 @@ As a result model achieved 0.015 Training and 0.057 Validation Loss with 100 per
 Possible improvement is adding learning rate decay, as current setup achieves great accuracy and loss fast and then varies about these values for next 100 epochs. 
 
 ### Problems and solutions
-**Unstable training**:  With small batch sizes the training samples vary drastically, producing big Loss changes, leading to an unstable training process. 
+**Unstable training**:  With small batch sizes the training samples vary drastically, producing big Loss changes, leading to an unstable training process.
 _Measures for batch size of 3_: <img width="1779" height="892" alt="image" src="https://github.com/user-attachments/assets/80304b06-1407-4c34-b98b-26541d3c2ca7" />
 The solution to such problem is increasing batch size to reasonable sizes. 
 Another solution could be decreasing learning rate. 
@@ -38,7 +38,7 @@ _Measures for batch size of 48_: <img width="1777" height="892" alt="image" src=
 **Underfitting**: Learning rate too small leads to slow training process.
 _Lr = 0.0005_: <img width="1773" height="889" alt="image" src="https://github.com/user-attachments/assets/c29836bf-dab8-4a6e-ab2a-d1d50d290036" />
 Possible solutions may be: Increasing Lr or Increasing number of epochs
-_Lr = 0.05_					           _Lr = 0.0005, N_Epochs = 2000_ 
+_Lr = 0.05_ | _Lr = 0.0005, N_Epochs = 2000_ 
 <img width="1699" height="847" alt="image" src="https://github.com/user-attachments/assets/6cbcc670-faf5-474a-a972-76d472eb917b" />
 
 ### Experiment
