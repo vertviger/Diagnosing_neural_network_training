@@ -29,20 +29,25 @@ Possible improvement is adding learning rate decay, as current setup achieves gr
 
 ### Problems and solutions
 **Unstable training**:  With small batch sizes the training samples vary drastically, producing big Loss changes, leading to an unstable training process.
+
 _Measures for batch size of 3_: <img width="1779" height="892" alt="image" src="https://github.com/user-attachments/assets/80304b06-1407-4c34-b98b-26541d3c2ca7" />
 The solution to such problem is increasing batch size to reasonable sizes. 
 Another solution could be decreasing learning rate. 
 Starting with higher values to explore the dataset faster and then lowering it to find minimum with better approximation and less noise.
+
 _Measures for batch size of 48_: <img width="1777" height="892" alt="image" src="https://github.com/user-attachments/assets/f3558c4f-ed8d-4854-9860-3cec6910a553" />
 
 **Underfitting**: Learning rate too small leads to slow training process.
+
 _Lr = 0.0005_: <img width="1773" height="889" alt="image" src="https://github.com/user-attachments/assets/c29836bf-dab8-4a6e-ab2a-d1d50d290036" />
 Possible solutions may be: Increasing Lr or Increasing number of epochs
+
 _Lr = 0.05_ | _Lr = 0.0005, N_Epochs = 2000_ 
 <img width="1699" height="847" alt="image" src="https://github.com/user-attachments/assets/6cbcc670-faf5-474a-a972-76d472eb917b" />
 
 ### Experiment
 _Observing impact of batch size on training process_
+
 **Very small batch size**: Training_Set_Size / 18 ( equals to 5 in current dataset)
 <img width="1783" height="892" alt="image" src="https://github.com/user-attachments/assets/b7de2051-b80c-4fe9-889a-d9a211fddc79" />
 We can observe huge variations of loss function on the whole training process, as small batch sizes produce great instability because of how much data varies from batch to batch.
