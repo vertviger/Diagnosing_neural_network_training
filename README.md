@@ -1,6 +1,7 @@
 # Neural Network Training Diagnosis
 
 ## Specs:
+    Classification
     One Hidden Layer
     16 neurons on hidden layer
     200 epochs
@@ -11,7 +12,6 @@
     Optimizer = AdamW (Compatible with weight decay)
     Activation functions: Linear on outer layer, RELU on hidden layer
 
-**Task**: Classification
 **Dataset**: Iris, split proportions 60/20/20, sampled, 4 features, 3 classes
 
 <img width="1792" height="1792" alt="image" src="https://github.com/user-attachments/assets/43bed6c9-d529-4e32-91c5-8ef8597e0086" />
