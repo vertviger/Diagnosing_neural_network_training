@@ -34,6 +34,7 @@ The solution to such problem is increasing batch size to reasonable sizes.
 Another solution could be decreasing learning rate. 
 Starting with higher values to explore the dataset faster and then lowering it to find minimum with better approximation and less noise.
 _Measures for batch size of 48_: <img width="1777" height="892" alt="image" src="https://github.com/user-attachments/assets/f3558c4f-ed8d-4854-9860-3cec6910a553" />
+
 **Underfitting**: Learning rate too small leads to slow training process.
 _Lr = 0.0005_: <img width="1773" height="889" alt="image" src="https://github.com/user-attachments/assets/c29836bf-dab8-4a6e-ab2a-d1d50d290036" />
 Possible solutions may be: Increasing Lr or Increasing number of epochs
@@ -45,9 +46,11 @@ _Observing impact of batch size on training process_
 **Very small batch size**: Training_Set_Size / 18 ( equals to 5 in current dataset)
 <img width="1783" height="892" alt="image" src="https://github.com/user-attachments/assets/b7de2051-b80c-4fe9-889a-d9a211fddc79" />
 We can observe huge variations of loss function on the whole training process, as small batch sizes produce great instability because of how much data varies from batch to batch.
+
 **Medium batch size**: Training_Set_Size / 3 ( equals to 30 in current dataset)
 <img width="1684" height="843" alt="image" src="https://github.com/user-attachments/assets/5d90cda3-5297-4427-a722-91d6e2a0ce3a" />
 We can see that the starting accuracy was lower compared to the small batch size, but after approximately 15 epochs it got to the 92+ percent values and was more stable in that range. Also loss function has lower values and less noise.  
+
 **Big batch size**: Training_Set_Size ( equals to 90 in current dataset)
 <img width="1678" height="838" alt="image" src="https://github.com/user-attachments/assets/a9265679-b04c-46f1-a6a4-017067616eef" />
 Loss and Accuracy curves are much more stable, because the model operates on the whole dataset at once, therefore computing gradients on entire dataset.
