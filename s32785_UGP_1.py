@@ -1,6 +1,7 @@
 import csv 
 import math
 import random
+import numpy as np
 import torch
 import torch.optim as optim
 import torch.nn as nn
@@ -8,6 +9,7 @@ from torch.utils.data import TensorDataset, DataLoader
 import matplotlib.pyplot as plt
 
 random.seed(42)
+torch.manual_seed(42)
 # reading data from the file
 data = []
 with open('dataset.csv', mode = 'r') as file:
@@ -114,7 +116,7 @@ l_test_t = torch.tensor(l_test, dtype = torch.long)
 # batches setup
 
 train_dataset = TensorDataset(V_train_t, l_train_t)
-batch_size = 16
+batch_size = 32
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 # Multi Layer Perceptron
@@ -134,15 +136,15 @@ class BaselineMLP(nn.Module):
         out = self.fc2(out)
         return out
 
-model = BaselineMLP(input_dim=4, hidden_dim=8, output_dim=3, dropout_P=0.10)
+model = BaselineMLP(input_dim=4, hidden_dim=16, output_dim=3, dropout_P=0.10)
 
 # Loss function
 criterion = nn.CrossEntropyLoss()
 # Gradient for parameter updates
-optimizer = optim.Adam(model.parameters(), lr = 0.5, weight_decay=1e-3)
+optimizer = optim.AdamW(model.parameters(), lr = 0.05, weight_decay=1e-3)
 
 # Training setup
-epochs = 150
+epochs = 200
 train_losses = []
 val_losses = []
 train_accuracies = []
@@ -185,7 +187,7 @@ for epoch in range(epochs):
     val_accuracies.append(val_accuracy)
 
     # debug
-    if (epoch + 1) % 30 == 0:
+    if ((epoch + 1) % 50 == 0) or epoch + 1 == epochs:
         print(
             f"Epoch {epoch+1:03d}/{epochs} | "
             f"Train Loss: {loss.item():.4f} | Val Loss: {val_loss.item():.4f} | "
@@ -205,7 +207,7 @@ print(f"Test Acc: {test_accuracy*100:.1f}%")
 
 # plotting the accuracy and loss metrics
 
-fig, axes = plt.subplots(2, 2, figsize = (10, 10))
+fig, axes = plt.subplots(2, 2, figsize = (12, 12))
 ax1, ax2, ax3, ax4 = axes.flatten()
 
 ax1.plot(train_losses, label = "Train Loss", color = "blue")
@@ -223,6 +225,44 @@ ax2.set_xlabel("Epochs")
 ax2.set_ylabel("Accuracy %")
 ax2.legend()
 ax2.grid(True)
+
+feature_names = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
+
+val_preds_np = val_predictions.numpy()
+true_val_labels = np.array(l_val)
+X_val = np.array(V_val)
+
+def plot_dual_layer_points(ax, feat_x, feat_y, title):
+  ax.scatter(
+      X_val[:, feat_x],
+      X_val[:, feat_y],
+      c=val_preds_np,
+      s=140,
+      alpha=0.4,
+  )
+
+  ax.scatter(
+      X_val[:, feat_x],
+      X_val[:, feat_y],
+      c=true_val_labels,
+      s=50,
+  )
+
+  ax.set_title(title)
+  ax.set_xlabel(f"Feature {feat_x} ({feature_names[feat_x]})")
+  ax.set_ylabel(f"Feature {feat_y} ({feature_names[feat_y]})")
+  ax.grid(True)
+
+
+# Validation Set - Sepal Dimensions (Features 0 & 1)
+plot_dual_layer_points(
+    ax3, 0, 1, "Validation set plot by features 0 and 1"
+)
+
+# Validation Set - Petal Dimensions (Features 2 & 3)
+plot_dual_layer_points(
+    ax4, 2, 3, "Validation set plot by features 2 and 3"
+)
 
 plt.tight_layout()
 plt.show()
