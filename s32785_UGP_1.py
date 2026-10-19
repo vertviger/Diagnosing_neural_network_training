@@ -7,6 +7,8 @@ import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
 
 random.seed(42)
 torch.manual_seed(42)
@@ -151,7 +153,7 @@ model = BaselineMLP(input_dim=4, hidden_dim=16, hidden_dim2=16, output_dim=3, dr
 # Loss function
 criterion = nn.CrossEntropyLoss()
 # Gradient for parameter updates
-optimizer = optim.Adam(model.parameters(), lr = 0.05, weight_decay=1e-3)
+optimizer = optim.AdamW(model.parameters(), lr = 0.05, weight_decay=1e-3)
 
 # Training setup
 epochs = 200
@@ -217,7 +219,7 @@ print(f"Test Acc: {test_accuracy*100:.1f}%")
 
 # plotting the accuracy and loss metrics
 
-plt.style.use('dark_background')
+# plt.style.use('dark_background') #for git if needed 
 
 fig, axes = plt.subplots(2, 2, figsize = (12, 12))
 ax1, ax2, ax3, ax4 = axes.flatten()
@@ -275,6 +277,16 @@ plot_dual_layer_points(
 plot_dual_layer_points(
     ax4, 2, 3, "Validation set plot by features 2 and 3"
 )
+
+# confusion matrix on test predictions
+cm = confusion_matrix(l_test, test_predictions)
+
+plt.figure(figsize=(6, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Oranges', 
+            xticklabels=unique_labels, yticklabels=unique_labels)
+plt.xlabel("Predicted Label")
+plt.ylabel("True Label")
+plt.title("Confusion Matrix - Iris Classification")
 
 plt.tight_layout()
 plt.show()
