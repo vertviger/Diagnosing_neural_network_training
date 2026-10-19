@@ -122,26 +122,36 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 # Multi Layer Perceptron
 class BaselineMLP(nn.Module):
 
-    def __init__(self, input_dim, hidden_dim, output_dim, dropout_P):
+    def __init__(self, input_dim, hidden_dim, hidden_dim2, output_dim, dropout_P):
         super(BaselineMLP, self).__init__()
         self.fc1 = nn.Linear(input_dim, hidden_dim)
-        self.relu = nn.ReLU()
-        self.dropout = nn.Dropout(dropout_P)
-        self.fc2 = nn.Linear(hidden_dim, output_dim)
+        self.relu1 = nn.ReLU()
+        self.dropout1 = nn.Dropout(dropout_P)
+        
+        self.fc2 = nn.Linear(hidden_dim, hidden_dim2)
+        self.relu2 = nn.ReLU()
+        self.dropout2 = nn.Dropout(dropout_P)
+        
+        self.fc3 = nn.Linear(hidden_dim, output_dim)
 
     def forward(self, x):
         out = self.fc1(x)
-        out = self.relu(out)
-        out = self.dropout(out)
+        out = self.relu1(out)
+        out = self.dropout1(out)
+
         out = self.fc2(out)
+        out = self.relu2(out)
+        out = self.dropout2(out)
+
+        out = self.fc3(out)
         return out
 
-model = BaselineMLP(input_dim=4, hidden_dim=16, output_dim=3, dropout_P=0.10)
+model = BaselineMLP(input_dim=4, hidden_dim=16, hidden_dim2=16, output_dim=3, dropout_P=0.10)
 
 # Loss function
 criterion = nn.CrossEntropyLoss()
 # Gradient for parameter updates
-optimizer = optim.AdamW(model.parameters(), lr = 0.05, weight_decay=1e-3)
+optimizer = optim.Adam(model.parameters(), lr = 0.05, weight_decay=1e-3)
 
 # Training setup
 epochs = 200
